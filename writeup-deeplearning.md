@@ -599,15 +599,17 @@ From the score of IoU for the hero about detection from far away, I think there 
 ### Additional Data Collection
 Before I start to collect images from Drone Simulator, I review images from sample_evaluation_data/patrol_with_targ folder.
 ![sampleEvaluation](docs/misc/2_run2cam1_00296.jpeg)
+
 The image above tells us following information:
 1. The default drone height may not be optimized. The picture shows big marble on the floor.
 2. The drone flight slightly above typical human height. 
 3. Where is the place with marble and trees.
 
 ![sample2Evaluation](docs/misc/2_run2cam1_00301.jpeg)
-This image tells us that the activity range is within 3 parallel streets.
 
-With these info, i have a few runs of simulation. After running code/preprocess_ims.py, I have another 7000 plus images for training.
+This image tells us that the Hero and Drone activity range is within 3 parallel streets.
+
+With these info, I run a few runs of simulation. After running code/preprocess_ims.py, I have another 7000 plus images for training.
 The training network is without 1x1 convolution layer for better quick evaluation.
 
 ```python
@@ -693,10 +695,12 @@ print(final_score)
 ```
 
 The IoU for the hero about following behind is 0.8590097749649536, while previous score is 0.862560113630525
+
 The IoU for the hero about detection from far away is 0.2212737292960813, while previous score is 0.13380111678102963
+
 The final score is 0.408459338519, while 0.347734478092 previously.
 
-IoU for hero on detection from far away has been improved significantly. It is 65.37% improvement.
+IoU for hero on detection from far away has been improved significantly. It is 65.37% improvement just by collecting data for area that training performed poorly.
 
 ### Conclusion
 We barely passed the final score during quick evaluation.
