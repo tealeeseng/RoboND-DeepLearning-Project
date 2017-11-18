@@ -1,11 +1,12 @@
 [![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
 
 ## Deep Learning Project by Lee Seng
-In this project, i'll train a deep neural network to handle segmentation task. Image segmentation is about object classification at pixel level. We are running a drone in simulator to capture images to build up an network architect for training. The same network can be applied to train realistic images later. The project can be applied to scenarios like "follow me" drone camera as well as human-robot collabration in industry.
+In this project, I'll train a deep neural network to handle segmentation task. Image segmentation is about object classification at pixel level. We are running a drone in simulator to capture images to build up an network architect for training. The same network can be applied to train realistic images later. The project can be applied to scenarios like selfie drone camera as well as human-robot collabration in industry.
 
 
 ![Semantic Segmentation](docs/misc/semanticSegmentation.png)
-Objects detected at pixel level. Same objects are displayed in same color. 
+Objects detected at pixel level. Same objects are displayed in same color. For example, cars are colored in purple. 
+
 
 ## Segmentation Deep neural network
 Our Segmentation Deep neural network is Fully Convolutional Network. It basically consists of following 3 layers:
@@ -14,20 +15,20 @@ Our Segmentation Deep neural network is Fully Convolutional Network. It basicall
 3. Decoding layer
 
 ![Segmentation network](docs/misc/fcn.png)
-Object, .e.g, cars, are colored in purple. 
 
 ### 1. Encoding layer
 In Fully convolutional Network, Encoding layer simply consists of layers of convolutional network, which responsibles for identifying objects at various scale. 
 
-A typical conolutional layers are constructed as below.
+A typical convolutional layers are constructed as below.
 ![Convnet](docs/misc/convnet.png)
 
 
-The inputs are usually images with widthxheightx3color(RGB). The images will be convoluted with kernel into 128x128x16 feature map. The feature map can be further convoluted into 64x64x64 feature map for next level of object shape detection.
+The inputs are usually images with width x height x 3color(RGB). The images will be convoluted with kernel into 128x128x16 feature map. The feature map can be further convoluted into 64x64x64 feature map for next level of object shape detection.
 These convolutional operations show result as following dog image detection. 
 
 
 ![Detection Hierachy](docs/misc/heirarchy-diagram.jpg)
+
 First layer typically detects simple shapes like line in dog nostril, whereas higher layer can detects complicated shapes like dog face, as depicted above.
 
 The encoding layer can be implemented in Keras as following:
@@ -58,7 +59,7 @@ Typical Convolutional Network applied a Fully Connected layer for classification
 ![1x1ConvolutionLayer](docs/misc/1x1conv.png)
 
 The 1x1 convolution has following advantages:
-1. 1x1 convolution layer is as cheap in computation as simple matrix multiplication.
+1. 1x1 convolution layer is as cheap, in computation, as matrix multiplication.
 2. Adding 1x1 convolution layer adding deepness to the network cheaply as per item1.
 3. 1x1 convolution can also reduce dimensionality of previous layer while keeping spatial info.
 
@@ -127,7 +128,7 @@ I train the network with existing dataset as per instructed in [project setup](h
 The GPU is nVidia GTX 1080 with 8GB video RAM.
 
 First training results in training loss: 0.0569 - val_loss: 0.0711
-Each training epoch takes about 13 second. A quick 3 minutes gives us a basic ground to tune. 
+Each training epoch takes about 13 second. A quick 3 minutes gives us a basic ground for further tuning. 
 However, the validation loss is bouncing around drastically.
 ![bouncingTrainingCurve](docs/misc/simple-bs8-e10-f8.png)
 
@@ -183,6 +184,7 @@ IoU for hero is bad. It's best result is only 0.15260972035120104, which leads t
 ### Lower learning rate to 0.001
 With bouncing validation loss curve in mind, I decided to lower the learning rate to 0.001.
 ![SmootherValidationLossCurve](docs/misc/LowerLearningRate0.001.png)
+
 The training curves look much smoother and trending down. I think the learning rate is pretty all right.
 
 However, other IoU metrics still not good.
@@ -267,6 +269,7 @@ Each epoch training increased to 17seconds, which is extra 4 seconds. The ending
 ![WiderLayers](docs/misc/widerLayers.png)
 
 previous model depicted below for easy comparion.
+
 ![LowerLearningRate](docs/misc/LowerLearningRate0.001.png)
 
 ```markdown
