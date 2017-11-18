@@ -355,6 +355,7 @@ workers = 2
     
 ```
 The result is amazing! The epoch time increased to 35 seconds, almost double the time spent. However, the losses decreased 50% to loss: 0.0287 - val_loss: 0.0325
+
 ![DeeperLayers](docs/misc/deeperLayers.png)
 
 
@@ -409,7 +410,7 @@ The Best IoU for hero is 0.8045715042083385, which is 255.5% improvement from pr
 The IoU for hero on far away detection is 0.09246268781988813, which is 256.8% better than previous 0.025915759066637224
 The final score also enjoy similar improvement of 255.4%. Scored 0.313153828298 from 0.088117068553 peviously.
 
-This is pretty much testimony the rise of Deep Learning.
+This is pretty much a testimony on the rise of Deep Learning.
 
 
 ### Wider 1x1 convolution
@@ -499,7 +500,9 @@ print(final_score)
 ```
 
 The IoU for the hero about following behind is 0.862560113630525, while previous score is 0.8045715042083385
+
 The IoU for the hero about detection from far away is 0.13380111678102963, while previous score is 0.09246268781988813
+
 The final score is 0.347734478092, while 0.313153828298 previously.
 
 All of these results showing around 10% improvement.
@@ -583,17 +586,15 @@ print(final_score)
 0.358503763742
 ```
 
-61s - loss: 0.0307 - val_loss: 0.0298
-epoch time: 36s - loss: 0.0315 - val_loss: 0.0440
-
-
 The IoU for the hero about following behind is 0.8928946346302762, while previous score is 0.862560113630525
+
 The IoU for the hero about detection from far away is 0.14576112948346187, while previous score is 0.13380111678102963
+
 The final score is 0.358503763742, while 0.347734478092 previously.
 
 All of these showing around 3-5% improvement, but with the cost of double workload! We may want to drop this change, at least for the quick evaluation stage.
 
-From the score of IoU for the hero about detection from far away, I think the is not enough data about that. I believe it is time to collect my own data from Drone simulator.
+From the score of IoU for the hero about detection from far away, I think there is not enough data about that detection. I believe it is time to collect more data from Drone simulator.
 
 ### Additional Data Collection
 Before I start to collect images from Drone Simulator, I review images from sample_evaluation_data/patrol_with_targ folder.
