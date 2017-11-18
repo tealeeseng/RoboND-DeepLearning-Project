@@ -598,13 +598,13 @@ From the score of IoU for the hero about detection from far away, I think there 
 
 ### Additional Data Collection
 Before I start to collect images from Drone Simulator, I review images from sample_evaluation_data/patrol_with_targ folder.
-[!sampleEvaluation](docs/misc/2_run2cam1_00296.jpeg)
+![sampleEvaluation](docs/misc/2_run2cam1_00296.jpeg)
 The image above tells us following information:
 1. The default drone height may not be optimized. The picture shows big marble on the floor.
 2. The drone flight slightly above typical human height. 
 3. Where is the place with marble and trees.
 
-[!sample2Evaluation](docs/misc/2_run2cam1_00301.jpeg)
+![sample2Evaluation](docs/misc/2_run2cam1_00301.jpeg)
 This image tells us that the activity range is within 3 parallel streets.
 
 With these info, i have a few runs of simulation. After running code/preprocess_ims.py, I have another 7000 plus images for training.
@@ -642,7 +642,7 @@ workers = 2
     
 ```
 
-[!MoreData](docs/misc/moreData.png)
+![MoreData](docs/misc/moreData.png)
 
 ```markdown
 Epoch time:37s - loss: 0.0220 - val_loss: 0.0507
