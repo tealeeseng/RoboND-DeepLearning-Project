@@ -63,17 +63,36 @@ The 1x1 convolution has following advantages:
 2. Adding 1x1 convolution layer adding deepness to the network cheaply as per item1.
 3. 1x1 convolution can also reduce dimensionality of previous layer while keeping spatial info.
 
-We can implement 1x1 convolution layer as follwing code block:
+We can implement 1x1 convolution layer as following code block:
 
-```pythonstub
+```python
     con1x = conv2d_batchnorm(input_layer=encoding3, filters=2048, kernel_size=1, strides=1)
 
 ```
 
 ### Decoding layer
-Decoding layer consists of transposed convolutional networks. Transposed convolutional network are just reversed operations of normal convolutional networks. Other than that, it also concatenated with same level of convolutional network. This network concatenation bypass deeper convolution/deconvolution operations and thus getting the name of Skip Connection.
-Below shows Decoding layer with Skip Connection from Encoding layer.
+Decoding layer consists of transposed convolutional networks, which can be built with
+1. bilinear upsampling.
+2. Skip Connection.
+3. Convolution network.
+
 ![DecodingLayer](docs/misc/decon-3.png)
+
+Feature map output from 1x1 convolution are small in width and height. We needs to upsampling it in order to restore back to 
+original input image dimensions. We can apply bilinear upsampling to upscale the image as below.
+
+![bilinearUpscale](docs/misc/bilinear.png)
+
+To upscale 4 pixels to 16 pixels, there are 12 empty pixels to fill up. At first, we place the 4 pixels at the 4 corners of the 16 pixels region. 
+After that, we try to fill up 4 borders pixels linearly based on which 2 corner pixels the border lies with. 
+This operations fill up those 8 pixels on the borders, e.g. P12, and P34. P5 pixel value can derived from P12 and P34 linearly.
+
+After that, we concatenated upsampled result with the output from same level of Encoding layer. 
+By concatenating output from earlier level of Encoding layer straight to Decoding layer, this has bypass the deeper Encoding levels, 1x1 convolution and starting levels of Decoding layer. Therefore
+As deeper convolution/deconvolution operations have been skipped, and thus the concatenation getting the name of Skip Connection.
+
+After that, we convolute the output from Skip Connection.
+
 
 Typically, decoding layer can be implemented as below:
 ```python
@@ -831,7 +850,7 @@ The result of notebook execution can be refer at [result](docs/model_training-0.
 ## Future Enhancements
 We had witness why Deep Learning works well when we deepen Encoding/Decoding layers. We may want to try Deeper networks, more epochs, as well as collecting more relevant hero images from far.
 
-The images are masked in blue color for hero, and in green color for other human. Background are masked in red. Therefore, the training are focus on classifying these 3 classes. Other objects, like tree, will be considered as background and therefore the classification result is not as useful as human or hero. In order to recognized other objects, other objects have to be masked with another color, so that the FCN can pick up the new classes. The fcn_model(inputs, num_classes)'s num_classes has to be adjusted accordingly as well. In the real world situation, we may train simpler FCN and utilize RGB-D camera for masking process. This may create masking data faster with much less labourise manual masking.
+The images are masked in blue color for hero, and in green color for other human. Background are masked in red. Masking is class labelling process in this project. Therefore, the training are focus on classifying these 3 classes. Other objects, like tree, will be considered as background and therefore the classification result is not as useful as identifying human and hero. In order to recognized other objects, other objects have to be masked with other colors, so that the FCN can pick up the new classes. The fcn_model(inputs, num_classes)'s num_classes has to be adjusted as well. In real world situation, we may train FCN by utilize RGB-D camera for masking process. This may create masking data faster with much less laborious manual masking.
 
 
 #### Appendix:
