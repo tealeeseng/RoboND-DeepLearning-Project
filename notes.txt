@@ -1,4 +1,6 @@
 notes:
 1. QuadSim crashed easier with respawn interval in short.
 2. drone height maybe citical. 
+3. batch size small to understand loss curve.
+4. 
 

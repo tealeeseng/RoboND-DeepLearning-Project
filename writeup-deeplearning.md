@@ -14,7 +14,7 @@ Our Segmentation Deep neural network is Fully Convolutional Network. It basicall
 2. 1x1 convolution layer
 3. Decoding layer
 
-![Segmentation network](docs/misc/fcn.png)
+![Segmentation network](docs/misc/fcn-arch.svg)
 
 ### 1. Encoding layer
 In Fully convolutional Network, Encoding layer simply consists of layers of convolutional network, which responsibles for identifying objects at various scale. 
@@ -702,20 +702,139 @@ The final score is 0.408459338519, while 0.347734478092 previously.
 
 IoU for hero on detection from far away has been improved significantly. It is 65.37% improvement just by collecting data for area that training performed poorly.
 
+### Bigger Batch size and more Epoch
+
+The Network Architecture is basically settle down with the quick evaluation. We can adjust batch size until the GPU memory can handle it. I tried batch_size=64, but i got error of ResourceExhaustedError: OOM when allocating tensor with shape[64,160,160,131].
+Therefore, the batch_size=32.
+
+```markdown
+ResourceExhaustedError: OOM when allocating tensor with shape[64,160,160,131]
+	 [[Node: separable_conv2d_keras_6/separable_conv2d/depthwise = DepthwiseConv2dNative[T=DT_FLOAT, data_format="NHWC", padding="SAME", strides=[1, 1, 1, 1], _device="/job:localhost/replica:0/task:0/gpu:0"](concatenate_3/concat, separable_conv2d_keras_5/depthwise_kernel/read)]]
+	 
+```
+
+
+
+```python
+def fcn_model(inputs, num_classes):
+    
+    # TODO Add Encoder Blocks. 
+    # Remember that with each encoder layer, the depth of your model (the number of filters) increases.
+
+    encoding_layer1 = encoder_block(input_layer=inputs, filters=64, strides=2)
+    encoding_layer2 = encoder_block(input_layer=encoding_layer1, filters=128, strides=2)
+    encoding_layer3 = encoder_block(input_layer=encoding_layer2, filters=512, strides=2)
+
+
+
+
+    # TODO Add 1x1 Convolution layer using conv2d_batchnorm().
+    con1x = conv2d_batchnorm(input_layer=encoding_layer3, filters=1024, kernel_size=1, strides=1)
+    
+    # TODO: Add the same number of Decoder Blocks as the number of Encoder Blocks
+    
+    decoding_layer3=decoder_block(small_ip_layer=con1x, large_ip_layer=encoding_layer2, filters=512)
+    decoding_layer2=decoder_block(small_ip_layer=decoding_layer3, large_ip_layer=encoding_layer1, filters=128)
+    x=decoder_block(small_ip_layer=decoding_layer2, large_ip_layer=inputs, filters=64)
+
+    
+    # The function returns the output layer of your model. "x" is the final layer obtained from the last decoder_block()
+    return layers.Conv2D(num_classes, 1, activation='softmax', padding='same')(x)
+
+
+learning_rate = 0.001
+batch_size = 32
+num_epochs = 90
+steps_per_epoch = 200
+validation_steps = 50
+workers = 2
+
+```
+![TrainingCurveOf90EpochsBatchSize32](docs/misc/epoch90-batchSize32.png)
+
+There is a surprise surge of validation loss at epoch 25.
+
+```markdown
+epoch time -152s - loss: 0.0068 - val_loss: 0.0277
+
+# Scores for while the quad is following behind the target. 
+true_pos1, false_pos1, false_neg1, iou1 = scoring_utils.score_run_iou(val_following, pred_following)
+number of validation samples intersection over the union evaulated on 542
+average intersection over union for background is 0.9966645410628372
+average intersection over union for other people is 0.4053506598357052
+average intersection over union for the hero is 0.9202270107089459
+number true positives: 539, number false positives: 0, number false negatives: 0
+
+# Scores for images while the quad is on patrol and the target is not visable
+true_pos2, false_pos2, false_neg2, iou2 = scoring_utils.score_run_iou(val_no_targ, pred_no_targ)
+number of validation samples intersection over the union evaulated on 270
+average intersection over union for background is 0.9917055138651323
+average intersection over union for other people is 0.8335565407302761
+average intersection over union for the hero is 0.0
+number true positives: 0, number false positives: 32, number false negatives: 0
+
+# This score measures how well the neural network can detect the target from far away
+true_pos3, false_pos3, false_neg3, iou3 = scoring_utils.score_run_iou(val_with_targ, pred_with_targ)
+number of validation samples intersection over the union evaulated on 322
+average intersection over union for background is 0.9974381062504207
+average intersection over union for other people is 0.5148128214429345
+average intersection over union for the hero is 0.37149500592237655
+number true positives: 175, number false positives: 2, number false negatives: 126
+
+# Sum all the true positives, etc from the three datasets to get a weight for the score
+true_pos = true_pos1 + true_pos2 + true_pos3
+false_pos = false_pos1 + false_pos2 + false_pos3
+false_neg = false_neg1 + false_neg2 + false_neg3
+​
+weight = true_pos/(true_pos+false_neg+false_pos)
+print(weight)
+0.816933638443936
+
+# The IoU for the dataset that never includes the hero is excluded from grading
+final_IoU = (iou1 + iou3)/2
+print(final_IoU)
+0.645861008316
+
+# And the final grade score is 
+final_score = final_IoU * weight
+print(final_score)
+0.527625583452
+```
+
+
+```markdown
+Epoch time -152s - loss: 0.0068 - val_loss: 0.0277
+Previous Epoch time -37s - loss: 0.0220 - val_loss: 0.0507
+```
+
+With 4 times the batch_size at 32, the epoch time also increase 400%. Coupled with more epochs, validation loss is 45% less than previous run. Training loss is 69% lesser than previous. Training loss curve is smoother and consistently reducing, but we need Validation loss curve to cross check the network performance.  
+
+The IoU for the hero about following behind is 7% improved at 0.9202270107089459, while previous score is 0.8590097749649536
+
+The IoU for the hero about detection from far away is 67.889% at 0.37149500592237655, while previous score is 0.2212737292960813
+
+The final score is 0.527625583452, which is 29.175% improved than the score of 0.408459338519.
+
+
+
 ### Conclusion
-We barely passed the final score during quick evaluation.
 
-The models can be downloaded as [model](data/weights/model_weights-vl0.0507313845679-b8-e10) and [modelConfig](data/weights/config_model_weights-vl0.0507313845679-b8-e10)
+We passed the 0.40 final score with the latest training.
 
-The jupyter notebook can be refer at [modelSimple](code/model_training-simple.ipynb)
+The models can be downloaded as [model](data/weights/model_weights-vl0.0276947870478-b32-e90) and [modelConfig](data/weights/config_model_weights-vl0.0276947870478-b32-e90)
 
-The result of notebook execution can be refer at [result](docs/model_training-simple-0.40.html)
+The jupyter notebook can be refer at [model_training](code/model_training.ipynb)
+
+The result of notebook execution can be refer at [result](docs/model_training-0.5276-bs32-e90.html)
 
 
-## What is Next?
-We had witness why Deep Learning works well when we deepen Encoding/Decoding layers.
-we may want to try Deeper networks, more epochs and bigger batch size, as well as collecting more relevant hero images from far.
-The images are masked in blue color for hero, and in green color for other human. Background are masked in red. Therefore, the training are focus on classifying these 3 classes. Other objects, like tree, will be considered as background and therefore the classification result is not as useful as human or hero.
+## Future Enhancements
+We had witness why Deep Learning works well when we deepen Encoding/Decoding layers. We may want to try Deeper networks, more epochs, as well as collecting more relevant hero images from far.
 
+The images are masked in blue color for hero, and in green color for other human. Background are masked in red. Therefore, the training are focus on classifying these 3 classes. Other objects, like tree, will be considered as background and therefore the classification result is not as useful as human or hero. In order to recognized other objects, other objects have to be masked with another color, so that the FCN can pick up the new classes. The fcn_model(inputs, num_classes)'s num_classes has to be adjusted accordingly as well. In the real world situation, we may train simpler FCN and utilize RGB-D camera for masking process. This may create masking data faster with much less labourise manual masking.
+
+
+#### Appendix:
+All diagrams unspecified are sourced from Udacity Robotic ND course materials. 
 
 
