@@ -79,15 +79,15 @@ Decoding layer consists of transposed convolutional networks, which can be built
 ![DecodingLayer](docs/misc/decon-3.png)
 
 Feature map output from 1x1 convolution are small in width and height. We needs to upsampling it in order to restore back to 
-original input image dimensions. We can apply bilinear upsampling to upscale the image as below.
+original input image dimensions. We can apply Bilinear Upsampling to upscale the image as below.
 
 ![bilinearUpscale](docs/misc/bilinear.png)
 
-To upscale 4 pixels to 16 pixels, there are 12 empty pixels to fill up. At first, we place the 4 pixels at the 4 corners on the 16 pixels region. 
-We try to fill up the 8 vacant pixel on 4 borders linearly based on which 2 corner pixels the border lies with. 
-This operations fill up those 8 pixels on the borders, e.g. P12, and P34. P5 pixel value can be derived from P12 and P34 linearly as well.
+To upscale 4 pixels to 16 pixels, there are 12 empty pixels to fill up. At first, we place the 4 pixels at the 4 corners on the 16 pixels region as P1, P2, P3 and P4. 
+We try to fill up the 8 empty pixel on 4 borders linearly based on which 2 corner pixels the border lies with. 
+With 8 pixels on the borders filled, e.g. P12, and P34, P5 pixel value can be derived from P12 and P34 linearly as well.
 
-After that, Skip Connect is about concatenating Bilinear Upsampling output with the output from same level of Encoding layer. 
+After that, Skip Connect concatenates Bilinear Upsampling output with the output from same level of Encoding layer. 
 By concatenating output from earlier level of Encoding layer straight to Decoding layer, this has bypass deeper Encoding levels, 1x1 convolution and earlier levels of Decoding layer. 
 Therefore, deeper convolution/deconvolution operations have been skipped, and some finer spatial info retained.
 
