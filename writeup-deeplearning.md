@@ -619,9 +619,9 @@ Before I start to collect images from Drone Simulator, I review images from samp
 ![sampleEvaluation](docs/misc/2_run2cam1_00296.jpeg)
 
 The image above tells us following information:
-1. The default drone height may not be optimized. The picture shows big marble on the floor.
-2. The drone flight slightly above typical human height. 
-3. Where is the place with marble and trees.
+1. The default drone flying height may not be optimized. The picture shows big marble on the floor.
+2. The drone flies slightly above typical human height. 
+3. Where the place is, with marble and grass.
 
 ![sample2Evaluation](docs/misc/2_run2cam1_00301.jpeg)
 
@@ -720,9 +720,11 @@ The final score is 0.408459338519, while 0.347734478092 previously.
 
 IoU for hero on detection from far away has been improved significantly. It is 65.37% improvement just by collecting data for area that training performed poorly.
 
-### Bigger Batch size and more Epoch
+### Bigger Batch size and more Epochs
 
-The Network Architecture is basically settle down with the quick evaluation. We can adjust batch size until the GPU memory can handle it. I tried batch_size=64, but i got error of ResourceExhaustedError: OOM when allocating tensor with shape[64,160,160,131].
+The Network Architecture is basically settle down from the quick evaluation. 
+We can adjust batch size until the GPU memory can handle it. 
+I tried batch_size=64, but i got error of ResourceExhaustedError: OOM when allocating tensor with shape[64,160,160,131].
 Therefore, the batch_size=32.
 
 ```markdown
